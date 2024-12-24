@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import IntroPage from "./components/IntroPage";
 import FavoriteSongs from "./components/FavoriteSongs";
 import WrappedHighlights from "./components/WrappedHighlights";
@@ -15,19 +15,25 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef(null);
 
-  // Adjust the slide based on scroll position
-  const handleScroll = (e) => {
+  /**
+   * Wrap handleScroll in useCallback so it’s stable
+   * and doesn't trigger a warning when used in useEffect.
+   */
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current) return;
     const scrollLeft = containerRef.current.scrollLeft;
-    const slideWidth = window.innerWidth; // Each slide is 100vw
+    const slideWidth = window.innerWidth;
     const index = Math.round(scrollLeft / slideWidth);
-    if (index !== currentIndex) setCurrentIndex(index);
-  };
+    if (index !== currentIndex) {
+      setCurrentIndex(index);
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
     const container = containerRef.current;
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [handleScroll], [currentIndex]);
+  }, [handleScroll]);
 
   // Smooth scrolling on dot click
   const scrollToIndex = (index) => {
