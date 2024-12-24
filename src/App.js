@@ -27,7 +27,7 @@ function App() {
     const container = containerRef.current;
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [currentIndex]);
+  }, [handleScroll], [currentIndex]);
 
   // Smooth scrolling on dot click
   const scrollToIndex = (index) => {
